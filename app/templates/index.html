@@ -54,14 +54,14 @@
         <p>Para comunicarse con nosotros, contamos con los siguientes medios:</p>
         
         <ul class="list-unstyled mb-4">
-            <li><i class="fas fa-phone-alt me-2 text-primary"></i>Teléfono: +52 123 456 7890</li>
+            <li><i class="fas fa-phone-alt me-2 text-primary"></i>Teléfono: +502 5555 1111</li>
             <li><i class="fas fa-envelope me-2 text-danger"></i>Email: contacto@medicitas.com</li>
-            <li><i class="fas fa-map-marker-alt me-2 text-success"></i>Dirección: Av. Salud 123, CDMX</li>
+            <li><i class="fas fa-map-marker-alt me-2 text-success"></i>Dirección: Zona medica, z10</li>
         </ul>
 
         <div class="d-grid gap-2 d-md-block">
-            <a href="/app/templates/paciente.html" class="btn btn-primary me-2">Pacientes</a>
-            <a href="/app/templates/doctores.html" class="btn btn-success">Doctores</a>
+            <a href="{{ url_for('pacientes.inicioPacientes') }}" class="btn btn-primary" >Pacientes</a>
+            <a href="{{ url_for('medicos.get_medicos') }}" class="btn btn-primary" >Doctores</a>
         </div>
     </div>
 

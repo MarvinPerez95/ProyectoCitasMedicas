@@ -1,9 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, url_for, redirect, render_template
 from app.models.paciente import Paciente
 
-pacientes_dp = Blueprint('pacientes', __name__)
+pacientes_dp = Blueprint('pacientes', __name__, url_prefix = '/')
 
-@pacientes_dp.route('/pacientes', methods =['GET'])
+@pacientes_dp.route('/', methods = ['GET'])
+def inicioPacientes():
+    return render_template("paciente.html")
+
+@pacientes_dp.route('/', methods =['GET'])
 def get_pacientes():
     """Obtener todos los Pacientes """
     try:
@@ -12,7 +16,7 @@ def get_pacientes():
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
     
-@pacientes_dp.route('/pacientes/<int:id>')
+@pacientes_dp.route('/<int:id>')
 def get_paciente(id):
     """Obtener Paciente por ID"""
     try:
@@ -27,7 +31,8 @@ def get_paciente(id):
 def create_Paciente():
     """Agregar un nuevo Paciente"""
     try:
-        data = request.get_json()
+        #data = request.get_json()
+        data = request.form()
         paciente = Paciente(
             nombre= data.get('nombre'),
             apellidos = data.get('apellidos'),
