@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from app.models.especialidad import Especialidad
 
-bp = Blueprint('especialidades', __name__)
+especialidades_dp = Blueprint('especialidades', __name__)
 
-@bp.route('/', methods=['GET'])
+@especialidades_dp.route('/', methods=['GET'])
 def get_especialidades():
     """Obtiene todas las especialidades"""
     try:
@@ -12,7 +12,7 @@ def get_especialidades():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@bp.route('/<int:id>', methods=['GET'])
+@especialidades_dp.route('/<int:id>', methods=['GET'])
 def get_especialidad(id):
     """Obtiene una especialidad por su ID"""
     try:
@@ -23,7 +23,7 @@ def get_especialidad(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@bp.route('/', methods=['POST'])
+@especialidades_dp.route('/', methods=['POST'])
 def create_especialidad():
     """Crea una nueva especialidad"""
     try:
@@ -38,7 +38,7 @@ def create_especialidad():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@bp.route('/<int:id>', methods=['PUT'])
+@especialidades_dp.route('/<int:id>', methods=['PUT'])
 def update_especialidad(id):
     """Actualiza una especialidad existente"""
     try:
@@ -54,7 +54,7 @@ def update_especialidad(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@bp.route('/<int:id>', methods=['DELETE'])
+@especialidades_dp.route('/<int:id>', methods=['DELETE'])
 def delete_especialidad(id):
     """Elimina una especialidad"""
     try:

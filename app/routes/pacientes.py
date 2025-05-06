@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from app.models.paciente import Paciente
 
-bp = Blueprint('pacientes', __name__)
+pacientes_dp = Blueprint('pacientes', __name__)
 
-@bp.route('/', methods =['GET'])
+@pacientes_dp.route('/pacientes', methods =['GET'])
 def get_pacientes():
     """Obtener todos los Pacientes """
     try:
@@ -12,7 +12,7 @@ def get_pacientes():
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
     
-@bp.route('/<int:id>')
+@pacientes_dp.route('/pacientes/<int:id>')
 def get_paciente(id):
     """Obtener Paciente por ID"""
     try:
@@ -23,7 +23,7 @@ def get_paciente(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@bp.route('/', methods= ['POST'])
+@pacientes_dp.route('/', methods= ['POST'])
 def create_Paciente():
     """Agregar un nuevo Paciente"""
     try:
@@ -42,7 +42,7 @@ def create_Paciente():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@bp.route('/<int:id>', methods=['PUT'])
+@pacientes_dp.route('/<int:id>', methods=['PUT'])
 def update_paciente(id):
     """Actualiza un Paciente existente"""
     try:
@@ -63,7 +63,7 @@ def update_paciente(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@bp.route('/<int:id>', methods=['SET'])
+@pacientes_dp.route('/<int:id>', methods=['SET'])
 def get_delete(id):
     """Desactivar un Paciente por su ID"""
     try:
