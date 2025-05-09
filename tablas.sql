@@ -1,5 +1,5 @@
 ﻿CREATE DATABASE GestionCitasMedicas;
-
+--drop database GestionCitasMedicas
 USE GestionCitasMedicas;
 GO
 
@@ -84,7 +84,7 @@ WHERE OBJECT_NAME(parent_object_id) = 'Usuarios'
 AND type = 'C' 
 AND is_disabled = 0;
 
--- Modificar la restricción CHECK para incluir el rol 'Paciente'
+-- Modificar la restricción CHECK para incluir el rol 'Paciente *****'
 ALTER TABLE Usuarios
 DROP CONSTRAINT CK__Usuarios__Rol__5BE2A6F2; 
 

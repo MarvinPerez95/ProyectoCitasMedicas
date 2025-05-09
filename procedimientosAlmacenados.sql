@@ -256,10 +256,10 @@ BEGIN
     SELECT SCOPE_IDENTITY() AS PacienteID;
 END;
 GO
-
+select * from Pacientes
 
 -- Obtener todos los pacientes
-CREATE PROCEDURE sp_ObtenerPacientes
+CREATE or alter PROCEDURE sp_ObtenerPacientes
 AS
 BEGIN
     SELECT PacienteID, Nombre, Apellidos, FechaNacimiento, 

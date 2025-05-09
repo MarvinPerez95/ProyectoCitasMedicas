@@ -28,7 +28,7 @@ class Paciente:
 
     def save(self):
         """Crear o actualizar un paciente"""
-        if self: #Crear
+        if self.id is None: #Crear
             result = execute_stored_procedure('sp_CrearPaciente',
                                             [self.nombre, self.apellido,self.fechaNacimiento,
                                             self.genero, self.direccion, self.telefono,
@@ -36,15 +36,15 @@ class Paciente:
             if result:
                 self.id = result[0]['PacienteID']
             return result
-        elif (self.id):
+        elif (self):
             return execute_stored_procedure('sp_ActualizarPaciente',
                                             [self.id, self.nombre, self.apellido,self.fechaNacimiento,
                                             self.genero, self.direccion, self.telefono, self.email])
 
     #Agregado
     @staticmethod
-    def delete(paciente_id):
+    def delete(id):
         """Eliminar Paciente""" # Eliminacion logica
-        result = execute_query('update Pacientes set estado = 0 where PacienteID = ?', [paciente_id])
-        return result
+        result = execute_query('update Pacientes set estado = 0 where PacienteID = ?', [id])
+        return result > 0
     

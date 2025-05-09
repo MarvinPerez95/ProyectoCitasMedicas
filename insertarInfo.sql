@@ -22,7 +22,7 @@ VALUES
 GO
 
 -- Insertar pacientes de prueba
-INSERT INTO Pacientes (Nombre, Apellidos, edad, Genero, Direccion, Telefono, Email)
+INSERT INTO Pacientes (Nombre, Apellidos, FechaNacimiento, Genero, Direccion, Telefono, Email)
 VALUES 
     ('Ana', 'López', '1985-05-15', 'F', 'Calle Principal 123', '555-7890', 'ana.lopez@email.com'),
     ('Pedro', 'Gómez', '1978-10-20', 'M', 'Avenida Central 456', '555-8901', 'pedro.gomez@email.com'),
