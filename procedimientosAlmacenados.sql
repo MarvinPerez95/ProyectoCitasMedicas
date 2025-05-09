@@ -1,4 +1,4 @@
-USE GestionCitasMedicas;
+ï»¿USE GestionCitasMedicas;
 GO
 
 -- ===========================
@@ -60,10 +60,10 @@ CREATE PROCEDURE sp_EliminarEspecialidad
     @EspecialidadID INT
 AS
 BEGIN
-    -- Primero verificamos que no haya médicos asociados
+    -- Primero verificamos que no haya mï¿½dicos asociados
     IF EXISTS (SELECT 1 FROM Medicos WHERE EspecialidadID = @EspecialidadID)
     BEGIN
-        RAISERROR('No se puede eliminar la especialidad porque existen médicos asociados', 16, 1);
+        RAISERROR('No se puede eliminar la especialidad porque existen mÃ©dicos asociados', 16, 1);
         RETURN;
     END
     
@@ -76,11 +76,11 @@ GO
 
 
 -- ===========================
--- PROCEDIMIENTOS PARA MÉDICOS
+-- PROCEDIMIENTOS PARA MÃ‰DICOS
 -- ===========================
 
--- Crear un nuevo médico
--- Crear un nuevo médico con validaciones
+
+-- Crear un nuevo mï¿½dico con validaciones
 CREATE OR ALTER PROCEDURE sp_CrearMedico
     @Nombre VARCHAR(50),
     @Apellidos VARCHAR(50),
@@ -107,26 +107,26 @@ BEGIN
     IF @Email IS NOT NULL AND 
        (@Email NOT LIKE '%_@__%.__%' OR CHARINDEX(' ', @Email) > 0)
     BEGIN
-        RAISERROR('Formato de email no válido', 16, 1);
+        RAISERROR('Formato de email no vï¿½lido', 16, 1);
         RETURN;
     END
     
-    -- Validar si ya existe un médico con ese email
+    -- Validar si ya existe un mï¿½dico con ese email
     IF @Email IS NOT NULL AND EXISTS (SELECT 1 FROM Medicos WHERE Email = @Email)
     BEGIN
-        RAISERROR('Ya existe un médico registrado con ese email', 16, 1);
+        RAISERROR('Ya existe un mï¿½dico registrado con ese email', 16, 1);
         RETURN;
     END
     
-    -- Validar formato básico de teléfono
+    -- Validar formato bï¿½sico de telï¿½fono
     IF @Telefono IS NOT NULL AND 
        (LEN(@Telefono) < 8 OR @Telefono LIKE '%[^0-9+-]%')
     BEGIN
-        RAISERROR('Formato de teléfono no válido', 16, 1);
+        RAISERROR('Formato de telï¿½fono no vï¿½lido', 16, 1);
         RETURN;
     END
     
-    -- Si pasa todas las validaciones, insertar el médico
+    -- Si pasa todas las validaciones, insertar el mï¿½dico
     INSERT INTO Medicos (Nombre, Apellidos, EspecialidadID, Telefono, Email, Estado)
     VALUES (@Nombre, @Apellidos, @EspecialidadID, @Telefono, @Email, 1);
     
@@ -135,7 +135,7 @@ END;
 GO
 
 
--- Obtener todos los médicos
+-- Obtener todos los mï¿½dicos
 CREATE PROCEDURE sp_ObtenerMedicos
 AS
 BEGIN
@@ -149,7 +149,7 @@ END;
 GO
 
 
--- Obtener un médico por ID
+-- Obtener un mï¿½dico por ID
 CREATE PROCEDURE sp_ObtenerMedicoPorID
     @MedicoID INT
 AS
@@ -164,7 +164,7 @@ END;
 GO
 
 
--- Actualizar médico
+-- Actualizar mï¿½dico
 CREATE PROCEDURE sp_ActualizarMedico
     @MedicoID INT,
     @Nombre VARCHAR(50),
@@ -194,7 +194,6 @@ GO
 -- PROCEDIMIENTOS PARA PACIENTES
 -- ===========================
 
--- Crear un nuevo paciente
 -- Crear un nuevo paciente con validaciones
 CREATE OR ALTER PROCEDURE sp_CrearPaciente
     @Nombre VARCHAR(50),
@@ -213,10 +212,10 @@ BEGIN
         RETURN;
     END
     
-    -- Validar género
+    -- Validar gï¿½nero
     IF @Genero IS NOT NULL AND @Genero NOT IN ('M', 'F', 'O')
     BEGIN
-        RAISERROR('Género no válido. Los valores permitidos son: M, F, O', 16, 1);
+        RAISERROR('Gï¿½nero no vï¿½lido. Los valores permitidos son: M, F, O', 16, 1);
         RETURN;
     END
     
@@ -231,7 +230,7 @@ BEGIN
     IF @Email IS NOT NULL AND 
        (@Email NOT LIKE '%_@__%.__%' OR CHARINDEX(' ', @Email) > 0)
     BEGIN
-        RAISERROR('Formato de email no válido', 16, 1);
+        RAISERROR('Formato de email no vï¿½lido', 16, 1);
         RETURN;
     END
     
@@ -242,16 +241,16 @@ BEGIN
         RETURN;
     END
     
-    -- Validar formato básico de teléfono
+    -- Validar formato bï¿½sico de telï¿½fono
     IF @Telefono IS NOT NULL AND 
        (LEN(@Telefono) < 8 OR @Telefono LIKE '%[^0-9+-]%')
     BEGIN
-        RAISERROR('Formato de teléfono no válido', 16, 1);
+        RAISERROR('Formato de telï¿½fono no vï¿½lido', 16, 1);
         RETURN;
     END
     
     -- Si pasa todas las validaciones, insertar el paciente
-    INSERT INTO Pacientes (Nombre, Apellidos, edad, Genero, Direccion, Telefono, Email, FechaRegistro, Estado)
+    INSERT INTO Pacientes (Nombre, Apellidos, FechaNacimiento, Genero, Direccion, Telefono, Email, FechaRegistro, Estado)
     VALUES (@Nombre, @Apellidos, @FechaNacimiento, @Genero, @Direccion, @Telefono, @Email, GETDATE(), 1);
     
     SELECT SCOPE_IDENTITY() AS PacienteID;
@@ -263,7 +262,7 @@ GO
 CREATE PROCEDURE sp_ObtenerPacientes
 AS
 BEGIN
-    SELECT PacienteID, Nombre, Apellidos, edad, 
+    SELECT PacienteID, Nombre, Apellidos, FechaNacimiento, 
            Genero, Direccion, Telefono, Email, FechaRegistro, Estado
     FROM Pacientes
     ORDER BY Apellidos, Nombre;
@@ -276,7 +275,7 @@ CREATE PROCEDURE sp_ObtenerPacientePorID
     @PacienteID INT
 AS
 BEGIN
-    SELECT PacienteID, Nombre, Apellidos, edad, 
+    SELECT PacienteID, Nombre, Apellidos, FechaNacimiento, 
            Genero, Direccion, Telefono, Email, FechaRegistro, Estado
     FROM Pacientes
     WHERE PacienteID = @PacienteID;
@@ -311,10 +310,10 @@ BEGIN
         RETURN;
     END
     
-    -- Validar género
+    -- Validar gï¿½nero
     IF @Genero IS NOT NULL AND @Genero NOT IN ('M', 'F', 'O')
     BEGIN
-        RAISERROR('Género no válido. Los valores permitidos son: M, F, O', 16, 1);
+        RAISERROR('Gï¿½nero no vï¿½lido. Los valores permitidos son: M, F, O', 16, 1);
         RETURN;
     END
     
@@ -329,7 +328,7 @@ BEGIN
     IF @Email IS NOT NULL AND 
        (@Email NOT LIKE '%_@__%.__%' OR CHARINDEX(' ', @Email) > 0)
     BEGIN
-        RAISERROR('Formato de email no válido', 16, 1);
+        RAISERROR('Formato de email no vÃ¡lido', 16, 1);
         RETURN;
     END
     
@@ -341,11 +340,11 @@ BEGIN
         RETURN;
     END
     
-    -- Validar formato básico de teléfono
+    -- Validar formato bï¿½sico de telï¿½fono
     IF @Telefono IS NOT NULL AND 
        (LEN(@Telefono) < 8 OR @Telefono LIKE '%[^0-9+-]%')
     BEGIN
-        RAISERROR('Formato de teléfono no válido', 16, 1);
+        RAISERROR('Formato de telÃ©fono no vÃ¡lido', 16, 1);
         RETURN;
     END
     
@@ -353,7 +352,7 @@ BEGIN
     UPDATE Pacientes
     SET Nombre = @Nombre,
         Apellidos = @Apellidos,
-        edad = @FechaNacimiento,  -- Nota: deberías cambiar 'edad' por 'FechaNacimiento'
+        FechaNacimiento = @FechaNacimiento,
         Genero = @Genero,
         Direccion = @Direccion,
         Telefono = @Telefono,
@@ -375,7 +374,7 @@ BEGIN
 	-- Verificar si el paciente tiene citas
 	IF EXISTS (SELECT 1 FROM Citas WHERE PacienteID = @PacienteID)
 	BEGIN
-		-- En lugar de eliminar físicamente, actualizamos el estado a inactivo
+		-- En lugar de eliminar fï¿½sicamente, actualizamos el estado a inactivo
 		UPDATE Pacientes
 		SET Estado = 0
 		WHERE PacienteID = @PacienteID;
@@ -384,7 +383,7 @@ BEGIN
 	END
 	ELSE
 	BEGIN
-		-- Si no tiene citas, se puede eliminar físicamente
+		-- Si no tiene citas, se puede eliminar fÃ­sicamente
 		DELETE FROM Pacientes
 		WHERE PacienteID = @PacienteID;
 
@@ -410,17 +409,17 @@ CREATE OR ALTER PROCEDURE sp_CrearCita
     @Motivo VARCHAR(255) = NULL
 AS
 BEGIN
-    -- Validar que el paciente exista y esté activo
+    -- Validar que el paciente exista y estï¿½ activo
     IF NOT EXISTS (SELECT 1 FROM Pacientes WHERE PacienteID = @PacienteID AND Estado = 1)
     BEGIN
-        RAISERROR('El paciente no existe o está inactivo', 16, 1);
+        RAISERROR('El paciente no existe o estÃ¡ inactivo', 16, 1);
         RETURN;
     END
     
-    -- Validar que el médico exista y esté activo
+    -- Validar que el mï¿½dico exista y estï¿½ activo
     IF NOT EXISTS (SELECT 1 FROM Medicos WHERE MedicoID = @MedicoID AND Estado = 1)
     BEGIN
-        RAISERROR('El médico no existe o está inactivo', 16, 1);
+        RAISERROR('El mÃ©dico no existe o estÃ¡ inactivo', 16, 1);
         RETURN;
     END
     
@@ -438,7 +437,7 @@ BEGIN
         RETURN;
     END
     
-    -- Verificar que no haya otra cita para el mismo médico en la misma fecha/hora
+    -- Verificar que no haya otra cita para el mismo mï¿½dico en la misma fecha/hora
     IF EXISTS (
         SELECT 1 
         FROM Citas 
@@ -448,11 +447,11 @@ BEGIN
           AND Estado != 'Cancelada'
     )
     BEGIN
-        RAISERROR('El médico ya tiene una cita programada en este horario', 16, 1);
+        RAISERROR('El mï¿½dico ya tiene una cita programada en este horario', 16, 1);
         RETURN;
     END
     
-    -- Si pasó todas las validaciones, crear la cita
+    -- Si pasÃ³ todas las validaciones, crear la cita
     INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado, FechaCreacion)
     VALUES (@PacienteID, @MedicoID, @Fecha, @Hora, @Motivo, 'Programada', GETDATE());
     
@@ -477,7 +476,7 @@ BEGIN
 END;
 GO
 
--- Obtener citas por médico
+-- Obtener citas por mï¿½dico
 CREATE PROCEDURE sp_ObtenerCitasPorMedico
     @MedicoID INT
 AS
@@ -504,7 +503,7 @@ AS
 BEGIN
     IF @Estado NOT IN ('Programada', 'Completada', 'Cancelada')
     BEGIN
-        RAISERROR('Estado no válido. Los valores permitidos son: Programada, Completada, Cancelada', 16, 1);
+        RAISERROR('Estado no vï¿½lido. Los valores permitidos son: Programada, Completada, Cancelada', 16, 1);
         RETURN;
     END
     
@@ -549,7 +548,7 @@ CREATE PROCEDURE sp_ActualizarCita
 AS
 BEGIN
 
-	-- Verificar que no haya conflicto de horario para el nuevo médico
+	-- Verificar que no haya conflicto de horario para el nuevo mï¿½dico
 	IF EXISTS (
 		SELECT 1
 		FROM Citas
@@ -561,7 +560,7 @@ BEGIN
 	)
 
 	BEGIN 
-		RAISERROR ('El médico ya tiene una cita programada en este horario', 16,1);
+		RAISERROR ('El mÃ©dico ya tiene una cita programada en este horario', 16,1);
 		RETURN;
 	END
 
@@ -585,7 +584,7 @@ CREATE PROCEDURE sp_EliminarCita
 	@CitaID INT
 AS
 BEGIN
-	-- En lugar de elinnar físicamente, actualizamos a cancelada
+	-- En lugar de elinnar fÃ­sicamente, actualizamos a cancelada
 	UPDATE citas
 	SET Estado = 'Cancelada',
 		Observaciones = CONCAT (ISNULL(Observaciones, ''),
@@ -598,9 +597,9 @@ END;
 GO
 
 
--- IMPLEMENTACIÓN DE PROCEDIMIENTOS DE AUTENTICACIÓN
+-- IMPLEMENTACIï¿½N DE PROCEDIMIENTOS DE AUTENTICACIï¿½N
 
--- Autenticación de Usuarios
+-- Autenticaciï¿½n de Usuarios
 -- Validar credenciales de usuario
 CREATE PROCEDURE sp_ValidarUsuario
     @Email VARCHAR(100),
@@ -620,30 +619,30 @@ BEGIN
     FROM Usuarios
     WHERE Email = @Email AND Password = @Password;
     
-    -- Verificar si se encontró el usuario y está activo
+    -- Verificar si se encontrï¿½ el usuario y estï¿½ activo
     IF @UsuarioID IS NULL
     BEGIN
         -- Credenciales incorrectas o usuario no existe
-        SELECT 0 AS Autenticado, 'Credenciales inválidas' AS Mensaje;
+        SELECT 0 AS Autenticado, 'Credenciales invï¿½lidas' AS Mensaje;
         RETURN;
     END
     
     IF @Estado = 0
     BEGIN
-        -- Usuario existe pero está inactivo
+        -- Usuario existe pero estÃ¡ inactivo
         SELECT 0 AS Autenticado, 'Usuario inactivo. Contacte al administrador.' AS Mensaje;
         RETURN;
     END
     
-    -- Usuario autenticado correctamente, actualizar último acceso
+    -- Usuario autenticado correctamente, actualizar Ãºltimo acceso
     UPDATE Usuarios
     SET UltimoAcceso = GETDATE()
     WHERE UsuarioID = @UsuarioID;
     
-    -- Devolver información del usuario (sin la contraseña)
+    -- Devolver informaciÃ³n del usuario (sin la contraseÃ±a)
     SELECT 
         1 AS Autenticado,
-        'Autenticación exitosa' AS Mensaje,
+        'Autenticaciï¿½n exitosa' AS Mensaje,
         @UsuarioID AS UsuarioID,
         @Nombre AS Nombre,
         @Rol AS Rol,
@@ -656,40 +655,40 @@ END;
 GO
 
 
--- Cambiar contraseña de usuario
+-- Cambiar contraseï¿½a de usuario
 CREATE PROCEDURE sp_CambiarPassword
     @UsuarioID INT,
     @PasswordActual VARCHAR(255),
     @PasswordNueva VARCHAR(255)
 AS
 BEGIN
-    -- Verificar que el usuario exista y que la contraseña actual sea correcta
+    -- Verificar que el usuario exista y que la contraseï¿½a actual sea correcta
     IF NOT EXISTS (SELECT 1 FROM Usuarios 
                    WHERE UsuarioID = @UsuarioID 
                    AND Password = @PasswordActual)
     BEGIN
-        SELECT 0 AS Exito, 'Contraseña actual incorrecta' AS Mensaje;
+        SELECT 0 AS Exito, 'Contraseï¿½a actual incorrecta' AS Mensaje;
         RETURN;
     END
     
-    -- Validar que la nueva contraseña cumpla requisitos de seguridad
+    -- Validar que la nueva contraseï¿½a cumpla requisitos de seguridad
     IF LEN(@PasswordNueva) < 8
     BEGIN
-        SELECT 0 AS Exito, 'La nueva contraseña debe tener al menos 8 caracteres' AS Mensaje;
+        SELECT 0 AS Exito, 'La nueva contraseï¿½a debe tener al menos 8 caracteres' AS Mensaje;
         RETURN;
     END
     
-    -- Actualizar la contraseña
+    -- Actualizar la contraseï¿½a
     UPDATE Usuarios
     SET Password = @PasswordNueva
     WHERE UsuarioID = @UsuarioID;
     
-    SELECT 1 AS Exito, 'Contraseña actualizada correctamente' AS Mensaje;
+    SELECT 1 AS Exito, 'Contraseï¿½a actualizada correctamente' AS Mensaje;
 END;
 GO
 
 
--- Reestablecer contraseña (solo para administradores)
+-- Reestablecer contraseï¿½a (solo para administradores)
 CREATE PROCEDURE sp_ReestablecerPassword
     @UsuarioID INT,
     @NuevaPassword VARCHAR(255),
@@ -705,7 +704,7 @@ BEGIN
     
     IF @EsAdmin = 0
     BEGIN
-        SELECT 0 AS Exito, 'Solo los administradores pueden reestablecer contraseñas' AS Mensaje;
+        SELECT 0 AS Exito, 'Solo los administradores pueden reestablecer contraseï¿½as' AS Mensaje;
         RETURN;
     END
     
@@ -716,12 +715,12 @@ BEGIN
         RETURN;
     END
     
-    -- Actualizar la contraseña
+    -- Actualizar la contraseï¿½a
     UPDATE Usuarios
     SET Password = @NuevaPassword
     WHERE UsuarioID = @UsuarioID;
     
-    SELECT 1 AS Exito, 'Contraseña reestablecida correctamente' AS Mensaje;
+    SELECT 1 AS Exito, 'Contraseï¿½a reestablecida correctamente' AS Mensaje;
 END;
 GO
 
@@ -752,42 +751,42 @@ BEGIN
     -- Validar rol
     IF @Rol NOT IN ('Admin', 'Medico', 'Recepcionista')
     BEGIN
-        SELECT 0 AS Exito, 'Rol no válido. Los roles permitidos son: Admin, Medico, Recepcionista' AS Mensaje;
+        SELECT 0 AS Exito, 'Rol no vÃ¡lido. Los roles permitidos son: Admin, Medico, Recepcionista' AS Mensaje;
         RETURN;
     END
     
     -- Validar formato de email
     IF @Email NOT LIKE '%_@__%.__%' OR CHARINDEX(' ', @Email) > 0
     BEGIN
-        SELECT 0 AS Exito, 'Formato de email no válido' AS Mensaje;
+        SELECT 0 AS Exito, 'Formato de email no vaÃ¡lido' AS Mensaje;
         RETURN;
     END
     
-    -- Verificar que el email no esté ya registrado
+    -- Verificar que el email no estï¿½ ya registrado
     IF EXISTS (SELECT 1 FROM Usuarios WHERE Email = @Email)
     BEGIN
-        SELECT 0 AS Exito, 'El email ya está registrado' AS Mensaje;
+        SELECT 0 AS Exito, 'El email ya estÃ¡ registrado' AS Mensaje;
         RETURN;
     END
     
-    -- Validar que la contraseña cumpla requisitos mínimos
+    -- Validar que la contraseÃ±a cumpla requisitos mï¿½nimos
     IF LEN(@Password) < 8
     BEGIN
-        SELECT 0 AS Exito, 'La contraseña debe tener al menos 8 caracteres' AS Mensaje;
+        SELECT 0 AS Exito, 'La contraseÃ±a debe tener al menos 8 caracteres' AS Mensaje;
         RETURN;
     END
     
-    -- Si el rol es médico, verificar que MedicoID no sea NULL y exista
+    -- Si el rol es mÃ©dico, verificar que MedicoID no sea NULL y exista
     IF @Rol = 'Medico' AND (@MedicoID IS NULL OR NOT EXISTS (SELECT 1 FROM Medicos WHERE MedicoID = @MedicoID))
     BEGIN
-        SELECT 0 AS Exito, 'Para un usuario médico, debe proporcionar un ID de médico válido' AS Mensaje;
+        SELECT 0 AS Exito, 'Para un usuario mÃ©dico, debe proporcionar un ID de mï¿½dico vï¿½lido' AS Mensaje;
         RETURN;
     END
     
-    -- Si el rol no es médico, MedicoID debe ser NULL
+    -- Si el rol no es mï¿½dico, MedicoID debe ser NULL
     IF @Rol != 'Medico' AND @MedicoID IS NOT NULL
     BEGIN
-        SELECT 0 AS Exito, 'MedicoID solo debe especificarse para usuarios con rol de Médico' AS Mensaje;
+        SELECT 0 AS Exito, 'MedicoID solo debe especificarse para usuarios con rol de MÃ©dico' AS Mensaje;
         RETURN;
     END
     
@@ -798,5 +797,269 @@ BEGIN
     DECLARE @NuevoUsuarioID INT = SCOPE_IDENTITY();
     
     SELECT 1 AS Exito, 'Usuario creado correctamente' AS Mensaje, @NuevoUsuarioID AS UsuarioID;
+END;
+GO
+
+
+---------------------------
+-----|||||		PROCEMIENDOS ALMACENADOS PARA REGISTRAR UN PACIENTE COMO USUARIO EN EL SISTEMAS					||
+
+
+-- Procedimiento para registrar un paciente con usuario en el sistema
+CREATE OR ALTER PROCEDURE sp_RegistrarPacienteUsuario
+    @Nombre VARCHAR(50),
+    @Apellidos VARCHAR(50),
+    @FechaNacimiento DATE = NULL,
+    @Genero CHAR(1) = NULL,
+    @Direccion VARCHAR(200) = NULL,
+    @Telefono VARCHAR(20) = NULL,
+    @Email VARCHAR(100) = NULL,
+    @Password VARCHAR(255) = NULL
+AS
+BEGIN
+    -- Validar datos bÃ¡sicos
+    IF LEN(@Nombre) < 2 OR LEN(@Apellidos) < 2
+    BEGIN
+        RAISERROR('El nombre y apellidos deben tener al menos 2 caracteres', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar gÃ©nero
+    IF @Genero IS NOT NULL AND @Genero NOT IN ('M', 'F', 'O')
+    BEGIN
+        RAISERROR('GÃ©nero no vÃ¡lido. Los valores permitidos son: M, F, O', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar fecha de nacimiento
+    IF @FechaNacimiento IS NOT NULL AND @FechaNacimiento > GETDATE()
+    BEGIN
+        RAISERROR('La fecha de nacimiento no puede ser posterior a hoy', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar email
+    IF @Email IS NULL OR @Email NOT LIKE '%_@__%.__%' OR CHARINDEX(' ', @Email) > 0
+    BEGIN
+        RAISERROR('El email es obligatorio y debe tener un formato vÃ¡lido', 16, 1);
+        RETURN;
+    END
+    
+    -- Verificar que el email no exista en pacientes ni usuarios
+    IF EXISTS (SELECT 1 FROM Pacientes WHERE Email = @Email) OR 
+       EXISTS (SELECT 1 FROM Usuarios WHERE Email = @Email)
+    BEGIN
+        RAISERROR('El email ya estÃ¡ registrado en el sistema', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar contraseÃ±a
+    IF @Password IS NULL OR LEN(@Password) < 8
+    BEGIN
+        RAISERROR('La contraseÃ±a es obligatoria y debe tener al menos 8 caracteres', 16, 1);
+        RETURN;
+    END
+    
+    -- Iniciar transacciÃ³n para asegurar que ambas operaciones se completen o ninguna
+    BEGIN TRANSACTION;
+    
+    BEGIN TRY
+        -- Insertar el paciente
+        INSERT INTO Pacientes (Nombre, Apellidos, FechaNacimiento, Genero, Direccion, 
+                              Telefono, Email, FechaRegistro, Estado)
+        VALUES (@Nombre, @Apellidos, @FechaNacimiento, @Genero, @Direccion, 
+               @Telefono, @Email, GETDATE(), 1);
+        
+        DECLARE @PacienteID INT = SCOPE_IDENTITY();
+        
+        -- Insertar el usuario
+        INSERT INTO Usuarios (Nombre, Email, Password, Rol, PacienteID, Estado)
+        VALUES (@Nombre + ' ' + @Apellidos, @Email, @Password, 'Paciente', @PacienteID, 1);
+        
+        DECLARE @UsuarioID INT = SCOPE_IDENTITY();
+        
+        -- Confirmar transacciÃ³n
+        COMMIT TRANSACTION;
+        
+        -- Devolver resultado
+        SELECT 1 AS Exito, 'Paciente registrado correctamente' AS Mensaje, 
+               @PacienteID AS PacienteID, @UsuarioID AS UsuarioID;
+    END TRY
+    BEGIN CATCH
+        -- Revertir transacciÃ³n en caso de error
+        ROLLBACK TRANSACTION;
+        
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+    END CATCH;
+END;
+GO
+
+-- Procedimiento para obtener citas de un paciente especÃ­fico
+CREATE OR ALTER PROCEDURE sp_ObtenerCitasPaciente
+    @PacienteID INT
+AS
+BEGIN
+    SELECT c.CitaID, c.Fecha, c.Hora, c.Motivo, c.Estado, c.Observaciones,
+           m.MedicoID, m.Nombre + ' ' + m.Apellidos AS NombreMedico,
+           e.EspecialidadID, e.Nombre AS Especialidad
+    FROM Citas c
+    INNER JOIN Medicos m ON c.MedicoID = m.MedicoID
+    INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
+    WHERE c.PacienteID = @PacienteID
+    ORDER BY c.Fecha DESC, c.Hora;
+END;
+GO
+
+-- Procedimiento para que un paciente pueda solicitar una cita
+CREATE OR ALTER PROCEDURE sp_SolicitarCitaPaciente
+    @PacienteID INT,
+    @MedicoID INT,
+    @Fecha DATE,
+    @Hora TIME,
+    @Motivo VARCHAR(255) = NULL
+AS
+BEGIN
+    -- Validar que el paciente exista y estÃ© activo
+    IF NOT EXISTS (SELECT 1 FROM Pacientes WHERE PacienteID = @PacienteID AND Estado = 1)
+    BEGIN
+        RAISERROR('El paciente no existe o estÃ¡ inactivo', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que el mÃ©dico exista y estÃ© activo
+    IF NOT EXISTS (SELECT 1 FROM Medicos WHERE MedicoID = @MedicoID AND Estado = 1)
+    BEGIN
+        RAISERROR('El mÃ©dico no existe o estÃ¡ inactivo', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que la fecha no sea anterior a hoy
+    IF @Fecha < CAST(GETDATE() AS DATE)
+    BEGIN
+        RAISERROR('No se pueden crear citas en fechas pasadas', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que la fecha no sea mÃ¡s de 60 dÃ­as en el futuro
+    IF @Fecha > DATEADD(DAY, 60, GETDATE())
+    BEGIN
+        RAISERROR('No se pueden programar citas con mÃ¡s de 60 dÃ­as de anticipaciÃ³n', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que no sea un horario fuera de horas laborales (ajusta segÃºn horario de la clÃ­nica)
+    IF @Hora < '08:00:00' OR @Hora > '18:00:00'
+    BEGIN
+        RAISERROR('Las citas deben programarse entre las 8:00 y las 18:00', 16, 1);
+        RETURN;
+    END
+    
+    -- Verificar que no haya otra cita para el mismo mÃ©dico en la misma fecha/hora
+    IF EXISTS (
+        SELECT 1 
+        FROM Citas 
+        WHERE MedicoID = @MedicoID 
+          AND Fecha = @Fecha 
+          AND Hora = @Hora
+          AND Estado != 'Cancelada'
+    )
+    BEGIN
+        RAISERROR('El mÃ©dico ya tiene una cita programada en este horario', 16, 1);
+        RETURN;
+    END
+    
+    -- Verificar que el paciente no tenga otra cita a la misma hora
+    IF EXISTS (
+        SELECT 1 
+        FROM Citas 
+        WHERE PacienteID = @PacienteID 
+          AND Fecha = @Fecha 
+          AND Hora = @Hora
+          AND Estado != 'Cancelada'
+    )
+    BEGIN
+        RAISERROR('Usted ya tiene una cita programada en este horario', 16, 1);
+        RETURN;
+    END
+    
+    -- Si pasÃ³ todas las validaciones, crear la cita
+    INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado, FechaCreacion)
+    VALUES (@PacienteID, @MedicoID, @Fecha, @Hora, @Motivo, 'Programada', GETDATE());
+    
+    DECLARE @CitaID INT = SCOPE_IDENTITY();
+    
+    SELECT @CitaID AS CitaID;
+END;
+GO
+
+--REPROGRAMAR CITAS MÃ‰DICOS
+
+CREATE OR ALTER PROCEDURE sp_ReprogramarCitaMedico
+    @CitaID INT,
+    @MedicoID INT, -- Para verificar que el mÃ©dico tiene permiso para modificar esta cita
+    @NuevaFecha DATE,
+    @NuevaHora TIME,
+    @Motivo VARCHAR(255) = NULL
+AS
+BEGIN
+    -- Verificar que la cita exista y pertenezca al mÃ©dico
+    IF NOT EXISTS (SELECT 1 FROM Citas WHERE CitaID = @CitaID AND MedicoID = @MedicoID)
+    BEGIN
+        RAISERROR('La cita no existe o no pertenece a este mÃ©dico', 16, 1);
+        RETURN;
+    END
+    
+    -- Verificar que la cita no estÃ© ya completada o cancelada
+    DECLARE @EstadoActual VARCHAR(20);
+    SELECT @EstadoActual = Estado FROM Citas WHERE CitaID = @CitaID;
+    
+    IF @EstadoActual != 'Programada'
+    BEGIN
+        RAISERROR('Solo se pueden reprogramar citas en estado "Programada"', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que la nueva fecha no sea anterior a hoy
+    IF @NuevaFecha < CAST(GETDATE() AS DATE)
+    BEGIN
+        RAISERROR('No se pueden programar citas en fechas pasadas', 16, 1);
+        RETURN;
+    END
+    
+    -- Validar que no sea un horario fuera de horas laborales
+    IF @NuevaHora < '08:00:00' OR @NuevaHora > '18:00:00'
+    BEGIN
+        RAISERROR('Las citas deben programarse entre las 8:00 y las 18:00', 16, 1);
+        RETURN;
+    END
+    
+    -- Verificar que no haya otra cita para el mismo mÃ©dico en la misma fecha/hora
+    IF EXISTS (
+        SELECT 1 
+        FROM Citas 
+        WHERE MedicoID = @MedicoID 
+          AND Fecha = @NuevaFecha 
+          AND Hora = @NuevaHora
+          AND CitaID != @CitaID
+          AND Estado != 'Cancelada'
+    )
+    BEGIN
+        RAISERROR('Ya tiene una cita programada en este horario', 16, 1);
+        RETURN;
+    END
+    
+    -- Si pasÃ³ todas las validaciones, actualizar la cita
+    UPDATE Citas
+    SET Fecha = @NuevaFecha,
+        Hora = @NuevaHora,
+        Motivo = ISNULL(@Motivo, Motivo),
+        Observaciones = CONCAT(ISNULL(Observaciones, ''), 
+                             ' | Reprogramada el: ', CONVERT(VARCHAR, GETDATE(), 120),
+                             ' - De: ', Fecha, ' ', Hora, 
+                             ' A: ', @NuevaFecha, ' ', @NuevaHora)
+    WHERE CitaID = @CitaID;
+    
+    SELECT @@ROWCOUNT AS FilasAfectadas;
 END;
 GO

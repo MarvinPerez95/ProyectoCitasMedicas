@@ -6,9 +6,9 @@ def get_db_connection():
     conn = pyodbc.connect(
         f'DRIVER={{ODBC Driver 17 for SQL Server}};'
         f'SERVER={Config.DB_SERVER};'
-        f'DATABASE={Config.GestionCitasMedicas};'
-        f'UID={Config.dbAdmin};'
-        f'PWD={Config.dbAdmin}'
+        f'DATABASE={Config.DB_NAME};'
+        f'UID={Config.DB_USER};'
+        f'PWD={Config.DB_PASSWORD}'
     )
     return conn
 

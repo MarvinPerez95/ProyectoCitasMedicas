@@ -1,13 +1,23 @@
 from flask import Blueprint, request, jsonify, url_for, redirect, render_template
 from app.models.paciente import Paciente
 
-pacientes_dp = Blueprint('pacientes', __name__, url_prefix = '/')
+pacientes_bp = Blueprint('pacientes', __name__, url_prefix = '/')
 
-@pacientes_dp.route('/', methods = ['GET'])
+@pacientes_bp.route('/', methods = ['GET'])
 def inicioPacientes():
-    return render_template("paciente.html")
+    return render_template("Pacientes/paciente.html")
 
-@pacientes_dp.route('/', methods =['GET'])
+
+@pacientes_bp.route('/view', methods = ['GET'])
+def inicioPacientesView():
+    return render_template("Pacientes/paci.html")
+
+@pacientes_bp.route('/view/nuevo', methods = ['GET'])
+def nuevo_paciente():
+    return render_template("Pacientes/nuevo_paciente.html")
+
+
+@pacientes_bp.route('/p', methods =['GET'])
 def get_pacientes():
     """Obtener todos los Pacientes """
     try:
@@ -16,7 +26,7 @@ def get_pacientes():
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
     
-@pacientes_dp.route('/<int:id>')
+@pacientes_bp.route('/<int:id>')
 def get_paciente(id):
     """Obtener Paciente por ID"""
     try:
@@ -27,40 +37,40 @@ def get_paciente(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@pacientes_dp.route('/', methods= ['POST'])
+@pacientes_bp.route('/', methods= ['POST'])
 def create_Paciente():
     """Agregar un nuevo Paciente"""
     try:
         #data = request.get_json()
-        data = request.form()
+        data = request.form
         paciente = Paciente(
-            nombre= data.get('nombre'),
-            apellidos = data.get('apellidos'),
-            fechaNacimiento = data.get('fechaNacimiento'),
-            genero = data.get('genero'),
-            direccion = data.get('direccion'),
-            telefono = data.get('telefono'),
-            email = data.get('email')
+            Nombre= data.get('nombre'),
+            Apellidos = data.get('apellidos'),
+            FechaNacimiento = data.get('fechaNacimiento'),
+            Genero = data.get('genero'),
+            Direccion = data.get('direccion'),
+            Telefono = data.get('telefono'),
+            Email = data.get('email')
         )
         paciente.save()
-        return jsonify({"message": "Paciente agregado", "id": paciente.id}), 2001
+        return jsonify({"message": "Paciente agregado", "id": paciente.id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@pacientes_dp.route('/<int:id>', methods=['PUT'])
+@pacientes_bp.route('/<int:id>', methods=['PUT'])
 def update_paciente(id):
     """Actualiza un Paciente existente"""
     try:
         data = request.get_json()
         paciente = Paciente(
             id=id,
-            nombre= data.get('nombre'),
-            apellidos = data.get('apellidos'),
-            fechaNacimiento = data.get('fechaNacimiento'),
-            genero = data.get('genero'),
-            direccion = data.get('direccion'),
-            telefono = data.get('telefono'),
-            email = data.get('email'),
+            Nombre= data.get('nombre'),
+            Apellidos = data.get('apellidos'),
+            FechaNacimiento = data.get('fechaNacimiento'),
+            Genero = data.get('genero'),
+            Direccion = data.get('direccion'),
+            Telefono = data.get('telefono'),
+            Email = data.get('email'),
             estado= data.get('estado')
         )
         paciente.save()
@@ -68,7 +78,7 @@ def update_paciente(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@pacientes_dp.route('/<int:id>', methods=['SET'])
+@pacientes_bp.route('/<int:id>', methods=['SET'])
 def get_delete(id):
     """Desactivar un Paciente por su ID"""
     try:

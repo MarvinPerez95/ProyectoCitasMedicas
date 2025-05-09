@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from app.models.medico import Medico
 
-medicos_dp = Blueprint('medicos', __name__)
+medicos_bp = Blueprint('medicos', __name__)
 
-@medicos_dp.route('/', methods=['GET'])
+@medicos_bp.route('/', methods=['GET'])
 def get_medicos():
     """Obtiene todos los Medicos"""
     try:
@@ -12,7 +12,7 @@ def get_medicos():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@medicos_dp.route('/<int:id>', methods=['GET'])
+@medicos_bp.route('/<int:id>', methods=['GET'])
 def get_medico(id):
     """Obtiene un medico por su ID"""
     try:
@@ -23,7 +23,7 @@ def get_medico(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@medicos_dp.route('/', methods=['POST'])
+@medicos_bp.route('/', methods=['POST'])
 def create_medico():
     """Crea un nuevo Medico"""
     try:
@@ -41,7 +41,7 @@ def create_medico():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@medicos_dp.route('/<int:id>', methods=['PUT'])
+@medicos_bp.route('/<int:id>', methods=['PUT'])
 def update_medico(id):
     """Actualiza un Medico existente"""
     try:
@@ -60,7 +60,7 @@ def update_medico(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@medicos_dp.route('/<int:id>', methods=['SET'])
+@medicos_bp.route('/<int:id>', methods=['SET'])
 def get_delete(id):
     """Desactivar un medico por su ID"""
     try:
