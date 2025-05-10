@@ -257,7 +257,7 @@ BEGIN
 END;
 GO
 select * from Pacientes
-
+go 
 -- Obtener todos los pacientes
 CREATE or alter PROCEDURE sp_ObtenerPacientes
 AS
@@ -293,7 +293,7 @@ CREATE OR ALTER PROCEDURE sp_ActualizarPaciente
     @Direccion VARCHAR(200) = NULL,
     @Telefono VARCHAR(20) = NULL,
     @Email VARCHAR(100) = NULL,
-    @Estado BIT = 1
+    @Estado BIT
 AS
 BEGIN
     -- Validar que el paciente exista
@@ -366,29 +366,29 @@ GO
 
 
 -- Eliminar un Paciente
-CREATE PROCEDURE sp_EliminarPaciente
+CREATE or alter PROCEDURE sp_EliminarPaciente
 	@PacienteID INT
 AS
 BEGIN
 
 	-- Verificar si el paciente tiene citas
-	IF EXISTS (SELECT 1 FROM Citas WHERE PacienteID = @PacienteID)
-	BEGIN
+--	IF EXISTS (SELECT 1 FROM Citas WHERE PacienteID = @PacienteID)
+--	BEGIN
 		-- En lugar de eliminar f�sicamente, actualizamos el estado a inactivo
 		UPDATE Pacientes
 		SET Estado = 0
 		WHERE PacienteID = @PacienteID;
 
 		SELECT 'Paciente marcado como inactivo debido a citas existentes' AS Mensaje;
-	END
-	ELSE
-	BEGIN
+--	END
+--	ELSE
+--	BEGIN
 		-- Si no tiene citas, se puede eliminar físicamente
-		DELETE FROM Pacientes
-		WHERE PacienteID = @PacienteID;
+--		DELETE FROM Pacientes
+--		WHERE PacienteID = @PacienteID;
 
 		SELECT @@ROWCOUNT AS FilasAfectadas;
-	END
+--	END
 END;
 GO
 

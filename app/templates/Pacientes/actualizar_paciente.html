@@ -15,11 +15,6 @@
 
 <div class="container-sm mt-5">
     <h1 class="mb-4 text-center">Editar paciente</h1>
-    {{paciente}}
-    {{paciente.Nombre}}
-
-    {{paciente.PacienteID}}
-
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for cat, msg in messages %}
@@ -31,7 +26,7 @@
       {% endif %}
     {% endwith %}
 
-    <form class="card p-4 shadow-sm" method="POST"
+    <form id="formPaciente" class="card p-4 shadow-sm" method="POST"
     action="{{ url_for('pacientes.update_paciente', id=paciente.PacienteID) }}">
 
   <div class="row g-3">
@@ -48,8 +43,8 @@
 
       <div class="col-md-4">
           <label class="form-label">Género</label>
-          <select class="form-select" name="genero" required>
-              <option value="">Selecciona…</option>
+          <select class="form-select" name="genero"  required>
+              <option value="" disabled {% if paciente.genero is none %}selected{% endif %}>Selecciona…</option>
               <option value="M" {% if paciente.genero == 'M' %}selected{% endif %}>Masculino</option>
               <option value="F" {% if paciente.genero == 'F' %}selected{% endif %}>Femenino</option>
               <option value="O" {% if paciente.genero == 'O' %}selected{% endif %}>Otro</option>
@@ -70,16 +65,37 @@
           <label class="form-label">Dirección</label>
           <input class="form-control" name="direccion" value="{{ paciente.Direccion }}" required>
       </div>
+
+      <div class="col-md-6">
+          <label class="form-label">Estado</label>
+          <select class="form-select" name="estado" required>
+              <option value="" disabled {% if paciente.Estado is none %}selected{% endif %}>Selecciona…</option>
+              <option value="1" {% if paciente.Estado == True %}selected{% endif %}>Activo</option>
+              <option value="0" {% if paciente.Estado == False %}selected{% endif %}>Inactivo</option>
+            </select>
+      </div>
+      
+        {{paciente}}    
+        {{paciente.Estado}}
+
+
   </div>
 
   <div class="d-flex justify-content-end gap-2 mt-4">
       <a class="btn btn-secondary"
-         href="{{ url_for('pacientes.inicioPacientes') }}">Cancelar</a>
-      <button type="submit" class="btn btn-primary">Actualizar paciente</button>
+         href="{{ url_for('pacientes.inicioPacientesView') }}">Cancelar</a>
+      <button type="submit" class="btn btn-primary" onsubmit="submitYRedirigir">
+        Actualizar
+        </button>
   </div>
 </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+function submitYRedirigir() {
+  const form = document.getElementById('formPaciente');
+      window.location.href = "{{ url_for('pacientes.inicioPacientesView') }}";
+}
+</script>
 </body>
 </html>

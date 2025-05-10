@@ -20,13 +20,13 @@ def nuevo_paciente():   #Creacion de paciente
 @pacientes_bp.route('/view/actualizar/<int:id>', methods = ['GET'])
 def editar_paciente(id):    #Actualizacion de Paciente
     paciente = Paciente.get_by_id(id)
-#    print (paciente)
     return render_template("Pacientes/actualizar_paciente.html", paciente = paciente)
 
-#@pacientes_bp.route('/view/eliminar/<int:id>')
-#def desactivar_paciente(id):    #Eliminacion Logica de paciente
-#    paciente = Paciente.get_by_id(id)
- #   return redner 
+@pacientes_bp.route('/view/delete/<int:id>', methods = ['DELETE'])
+def desactivar_paciente(id):    #Eliminacion Logica de paciente
+    paciente = Paciente.get_by_id(id)
+    #print(paciente)
+    return render_template("Pacientes/paci.html", paciente = paciente)
 
 
 
@@ -72,7 +72,7 @@ def update_paciente(id):    #Actualiza un Paciente existente
             Direccion = data.get('direccion'),
             Telefono = data.get('telefono'),
             Email = data.get('email'),
-            estado= data.get('estado')
+            Estado= data.get('estado')
         )
         paciente.save()
         return jsonify({"message": "Paciente actualizado"}), 200
@@ -90,21 +90,10 @@ def get_delete(id):     #Desactivar un Paciente por su ID
         desactivado = Paciente.delete(id)  # Solo pasa el ID, como se espera
 
         if desactivado:
-            return jsonify({"message": "Paciente desactivado correctamente"}), 200
-        else:
             return jsonify({"error": "No se pudo desactivar el paciente"}), 500
+        else:
+            return jsonify({"message": "Paciente desactivado correctamente"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-"""@pacientes_bp.route('/<int:id>')
-def get_paciente(id):   #Obtener Paciente por ID    #aun no implementado
-    try:
-        paciente = Paciente.get_by_id(id)
-        if paciente:
-            return jsonify(paciente), 200
-        return jsonify({"message": "Paciente no encontrado"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-"""   
+ 

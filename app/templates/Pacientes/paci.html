@@ -123,13 +123,13 @@
               data: "PacienteID",
               render: function (data, type, row) {
                 return `
-                <a href="/pacientes/view/actualizar/${data}" class="btn btn-sm btn-primary">
-                    Actualizar
-                </a>
-                <button href="/pacientes/p/delete/${data}" class="btn btn-sm btn-danger" onclick = 'eliminarPaciente${data}'>
-                    Eliminar
-                </button>
-            `;
+                  <a href="/pacientes/view/actualizar/${data}" class="btn btn-sm btn-primary">
+                  Actualizar
+                  </a>
+                  <button class="btn btn-sm btn-danger" onclick="eliminarPaciente(${data})">
+                  Eliminar
+                  </button>
+                `;
               },
               orderable: false,
               searchable: false,
@@ -174,7 +174,7 @@
               alert("Error: " + data.error);
             }
           })
-          .catch((error) => alert("Error de red: " + error));
+          .catch((err) => alert("Error de red: " + err));
       }
     </script>
   </body>

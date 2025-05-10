@@ -1,9 +1,8 @@
 from app.utils.database import execute_stored_procedure, execute_query
-
 class Paciente:
     def __init__(self, id=None, Nombre = None, Apellidos= None, FechaNacimiento = None, 
                  Genero = None, Direccion = None, Telefono = None, Email = None,
-                 fechaRegistro = None, estado = None ):
+                 fechaRegistro = None, Estado = None ):
         self.id = id
         self.nombre = Nombre
         self.apellido = Apellidos
@@ -13,7 +12,7 @@ class Paciente:
         self.telefono = Telefono
         self.email = Email
         self.fechaRegistro = fechaRegistro
-        self.estado = estado
+        self.estado = Estado
     
     @staticmethod
     def get_all():
@@ -39,12 +38,15 @@ class Paciente:
         elif (self):
             return execute_stored_procedure('sp_ActualizarPaciente',
                                             [self.id, self.nombre, self.apellido,self.fechaNacimiento,
-                                            self.genero, self.direccion, self.telefono, self.email])
+                                            self.genero, self.direccion, self.telefono, self.email, self.estado ])
 
     #Agregado
-    @staticmethod
-    def delete(id):
+    @classmethod
+    def delete(cls,id):
         """Eliminar Paciente""" # Eliminacion logica
-        result = execute_query('update Pacientes set estado = 0 where PacienteID = ?', [id])
-        return result > 0
+        paciente = execute_stored_procedure('sp_EliminarPaciente',[id])
+        if not paciente:
+            return False
+        paciente['Estado'] = False
+        return paciente
     
