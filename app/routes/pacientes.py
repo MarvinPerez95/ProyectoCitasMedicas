@@ -8,7 +8,6 @@ pacientes_bp = Blueprint('pacientes', __name__, url_prefix = '/')
 def inicioPacientes():  #Ruta principal
     return render_template("Pacientes/paciente.html")
 
-
 @pacientes_bp.route('/view', methods = ['GET'])
 def inicioPacientesView():  #Lista de Pacientes
     return render_template("Pacientes/paci.html")
@@ -25,12 +24,11 @@ def editar_paciente(id):    #Actualizacion de Paciente
 @pacientes_bp.route('/view/delete/<int:id>', methods = ['DELETE'])
 def desactivar_paciente(id):    #Eliminacion Logica de paciente
     paciente = Paciente.get_by_id(id)
-    #print(paciente)
     return render_template("Pacientes/paci.html", paciente = paciente)
 
 
 
-"""Rutas de pacientes back API *EndPoints*"""
+"""Rutas CRUD de pacientes back API (EndPoints)"""
 @pacientes_bp.route('/p', methods =['GET'])
 def get_pacientes():    #Obtener todos los Pacientes
     try:
@@ -75,7 +73,6 @@ def update_paciente(id):    #Actualiza un Paciente existente
             Estado= data.get('estado')
         )
         paciente.save()
-        #return jsonify({"message": "Paciente actualizado"}), 200
         return render_template("Pacientes/paci.html")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -88,7 +85,7 @@ def get_delete(id):     #Desactivar un Paciente por su ID
         if not paciente:
             return jsonify({"error": "Paciente no encontrado"}), 404
 
-        desactivado = Paciente.delete(id)  # Solo pasa el ID, como se espera
+        desactivado = Paciente.delete(id)  #Envio del ID del paciente
 
         if desactivado:
             return jsonify({"error": "No se pudo desactivar el paciente"}), 500

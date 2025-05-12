@@ -43,7 +43,6 @@ class Doctor:
 
 
    #Agregado 
-    @staticmethod
     @classmethod
     def delete(cls,id):
         """Eliminar Medico""" # Eliminacion logica

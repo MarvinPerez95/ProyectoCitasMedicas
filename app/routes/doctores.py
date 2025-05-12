@@ -2,32 +2,41 @@ from flask import Blueprint, request, jsonify, url_for, redirect, render_templat
 from app.models.doctor import Doctor
 
 doctor_bp = Blueprint('doctores', __name__, url_prefix = '/')
+
 """Rutas de doctores frond"""
 @doctor_bp.route('/', methods = ['GET'])
-def iniciodoctores():
+def inicioDoctores():
     return render_template("doctores/doctores.html")
 
+@doctor_bp.route('/view', methods = ['GET'])
+def inicioDoctoresView():
+    return render_template("doctores/doc.html")
 
-@doctor_bp.route('/', methods=['GET'])
+@doctor_bp.route('/agregarD/', methods = ['GET'])
+def nuevo_doctor():
+    return render_template("doctores/nuevo_doctor.html")
+
+@doctor_bp.route('/actualizar/<int:id>', methods=['GET'])
+def actualizar_doctor(id):
+    doctor = Doctor.get_by_id(id)
+    return render_template('/doctores/actualizar_doctor.html', doctor = doctor)
+
+@doctor_bp.route('/eliminar/<int:id>', methods = ['DELETE'])
+def eliminar_doctor(id):
+    doctor = Doctor.get_all(id)
+    return render_template("doctores/doctores.html", doctor = doctor)
+
+
+
+"""Rutas CRUD de Doctores Back API (EmdPoints)"""
+@doctor_bp.route('/d', methods =['GET'])
 def get_doctores():
-    """Obtiene todos los doctores"""
     try:
-        doctores = doctores.get_all()
-        return jsonify(doctores), 200
+        doctor = Doctor.get_all()
+        return jsonify(doctor), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@doctor_bp.route('/<int:id>', methods=['GET'])
-def get_doctor(id):
-    """Obtiene un doctor por su ID"""
-    try:
-        doctor = doctor.get_by_id(id)
-        if doctor:
-            return jsonify(doctor), 200
-        return jsonify({"message": "doctor no encontrado"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+        return jsonify({"Error:": str(e)}),500
+    
 @doctor_bp.route('/', methods=['POST'])
 def create_doctor():
     """Crea un nuevo doctor"""
@@ -46,11 +55,11 @@ def create_doctor():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@doctor_bp.route('/<int:id>', methods=['PUT'])
+@doctor_bp.route('/p/<int:id>', methods=['POST'])
 def update_doctor(id):
     """Actualiza un doctor existente"""
     try:
-        data = request.get_json()
+        data = request.form
         doctor = doctor(
             id=id,
             nombre=data.get('nombre'),
@@ -61,17 +70,27 @@ def update_doctor(id):
             estado=data.get('estado')
         )
         doctor.save()
-        return jsonify({"message": "doctor actualizado"}), 200
+        print (jsonify({"message": "Doctor actualizado"}), 200)
+        return render_template("Doctores/doc.html")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@doctor_bp.route('/<int:id>', methods=['SET'])
+@doctor_bp.route('/d/<int:id>', methods=['DELETE'])
 def get_delete(id):
     """Desactivar un doctor por su ID"""
     try:
-        doctor = doctor.delete(id)
-        if doctor:
-            return jsonify({"Message: doctor desactivado"},doctor), 200
-        return jsonify({"message": "doctor no encontrado"}), 404
+        doctor = Doctor.get_by_id(id)
+
+        if not doctor:
+            return jsonify({"error": "Doctor no encontrado"}), 404
+
+        desactivado = Doctor.delete(id)  # Envio del ID del doctor
+        print(doctor)
+
+        if desactivado:
+            return jsonify({"error": "No se pudo desactivar al Doctor"}), 500
+        else:
+            return jsonify({"message": "Doctor desactivado correctamente"}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500

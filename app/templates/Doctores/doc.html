@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Listado de Pacientes</title>
+    <title>Listado de Docotres</title>
 
     <!-- Bootstrap 5 -->
     <link
@@ -27,11 +27,11 @@
 
   <body class="bg-light">
     <div class="container-xl py-4">
-      <h1 class="mb-4">Pacientes</h1>
+      <h1 class="mb-4">Doctores</h1>
 
       <!-- Tabla vacía: se llena vía Ajax -->
       <table
-        id="tablaPacientes"
+        id="tablaDoctores"
         class="table table-striped table-bordered w-100"
       >
         <thead>
@@ -40,11 +40,9 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Apellidos</th>
-            <th>fechaNacimiento</th>
-            <th>Género</th>
+            <th>Especialidad</th>
             <th>Teléfono</th>
             <th>Email</th>
-            <th>Dirección</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -53,15 +51,7 @@
             <th></th>
             <th><input type="text" placeholder="Filtrar…" /></th>
             <th><input type="text" placeholder="Filtrar…" /></th>
-            <th></th>
-            <th>
-              <select>
-                <option value="">Todos</option>
-                <option value="M">M</option>
-                <option value="F">F</option>
-              </select>
-            </th>
-            <th></th>
+            <th><input type="text" placeholder="Filtrar…" /></th>
             <th></th>
             <th></th>
             <th>
@@ -86,47 +76,32 @@
     <script>
       $(function () {
         // 1 - crea la tabla
-        const tabla = $("#tablaPacientes").DataTable({
+        const tabla = $("#tablaDoctores").DataTable({
           ajax: {
-            url: "{{ url_for('pacientes.get_pacientes') }}", // /pacientes/p
+            url: "{{ url_for('doctores.get_doctores') }}", // /doctores/d
             dataSrc: "", // la lista JSON viene de raíz
           },
           deferRender: true, // rendimiento
           columns: [
-            { data: "PacienteID" },
+            { data: "MedicoID" },
             { data: "Nombre" },
             { data: "Apellidos" },
-            {
-              // «edad» viene como fecha → transforma a años
-              data: "FechaNacimiento",
-              render: function (data) {
-                if (!data) return "";
-                const birth = new Date(data);
-                const today = new Date();
-                let age = today.getFullYear() - birth.getFullYear();
-                const m = today.getMonth() - birth.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birth.getDate()))
-                  age--;
-                return age + " años";
-              },
-            },
-            { data: "Genero" },
+            { data: "Especialidad" },
             { data: "Telefono" },
             { data: "Email" },
-            { data: "Direccion" },
             {
               // booleano → etiqueta
               data: "Estado",
               render: (d) => (d ? "Activo" : "Inactivo"),
             },
             {
-              data: "PacienteID",
+              data: "MedicoID",
               render: function (data, type, row) {
                 return `
-                  <a href="/pacientes/view/actualizar/${data}" class="btn btn-sm btn-primary">
+                  <a href="/doctores/view/actualizar/${data}" class="btn btn-sm btn-primary">
                   Actualizar
                   </a>
-                  <button class="btn btn-sm btn-danger" onclick="eliminarPaciente(${data})">
+                  <button class="btn btn-sm btn-danger" onclick="eliminarDoctor(${data})">
                   Eliminar
                   </button>
                 `;
@@ -143,7 +118,7 @@
         });
 
         // 2 - activa filtros por columna
-        $("#tablaPacientes thead tr:eq(1) th").each(function (i) {
+        $("#tablaDoctores thead tr:eq(1) th").each(function (i) {
           const input = $("input, select", this);
           if (!input.length) return; // columnas sin filtro
 
@@ -155,11 +130,11 @@
         });
       });
 
-      function eliminarPaciente(id) {
-        if (!confirm("¿Estás seguro de que deseas eliminar este paciente?"))
+      function eliminarDoctor(id) {
+        if (!confirm("¿Estás seguro de que deseas eliminar este Doctor?"))
           return;
 
-        fetch(`/pacientes/p/${id}`, {
+        fetch(`/doctores/d/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
