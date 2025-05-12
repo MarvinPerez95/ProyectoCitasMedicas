@@ -86,7 +86,8 @@ CREATE OR ALTER PROCEDURE sp_CrearMedico
     @Apellidos VARCHAR(50),
     @EspecialidadID INT,
     @Telefono VARCHAR(20) = NULL,
-    @Email VARCHAR(100) = NULL
+    @Email VARCHAR(100) = NULL,
+	@Estado bit
 AS
 BEGIN
     -- Validar nombre y apellidos
@@ -128,7 +129,7 @@ BEGIN
     
     -- Si pasa todas las validaciones, insertar el m�dico
     INSERT INTO Medicos (Nombre, Apellidos, EspecialidadID, Telefono, Email, Estado)
-    VALUES (@Nombre, @Apellidos, @EspecialidadID, @Telefono, @Email, 1);
+    VALUES (@Nombre, @Apellidos, @EspecialidadID, @Telefono, @Email, @Estado);
     
     SELECT SCOPE_IDENTITY() AS MedicoID;
 END;
@@ -155,13 +156,14 @@ CREATE or alter PROCEDURE sp_ObtenerMedicoPorID
 AS
 BEGIN
     SELECT m.MedicoID, m.Nombre, m.Apellidos, 
-           e.Nombre AS Especialidad,
+           e.EspecialidadID, e.Nombre AS Especialidad,
            m.Telefono, m.Email, m.Estado
     FROM Medicos m
     INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
     WHERE m.MedicoID = @MedicoID;
 END;
 GO
+
 
 -- Actualizar m�dico
 CREATE or alter PROCEDURE sp_ActualizarMedico

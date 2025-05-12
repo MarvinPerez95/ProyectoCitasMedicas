@@ -1,12 +1,11 @@
 from app.utils.database import execute_stored_procedure, execute_query
 
 class Doctor:
-    def __init__(self, id=None, Nombre=None, Apellidos=None, EspecialidadID =None, Especialidad=None, 
+    def __init__(self, id=None, Nombre=None, Apellidos=None, EspecialidadID =None, 
                 Telefono=None, Email=None, Estado=True):
         self.id = id
         self.nombre = Nombre
         self.apellidos = Apellidos
-        self.especialidad = Especialidad
         self.especialidadID = EspecialidadID
         self.telefono = Telefono
         self.email = Email
@@ -30,7 +29,7 @@ class Doctor:
             result = execute_stored_procedure('sp_CrearMedico', 
                                            [self.nombre, self.apellidos, 
                                             self.especialidadID, self.telefono, 
-                                            self.email])
+                                            self.email, self.estado])
             if result:
                 self.id = result[0]['MedicoID']
             return result

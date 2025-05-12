@@ -40,7 +40,6 @@ def get_pacientes():    #Obtener todos los Pacientes
 @pacientes_bp.route('/', methods= ['POST'])
 def create_Paciente():  #Agregar un nuevo Paciente
     try:
-        #data = request.get_json()
         data = request.form
         paciente = Paciente(
             Nombre= data.get('nombre'),
@@ -49,17 +48,17 @@ def create_Paciente():  #Agregar un nuevo Paciente
             Genero = data.get('genero'),
             Direccion = data.get('direccion'),
             Telefono = data.get('telefono'),
-            Email = data.get('email')
+            Email = data.get('email'),
+            Estado= data.get('estado')
         )
         paciente.save()
-        return jsonify({"message": "Paciente agregado", "id": paciente.id}), 201
+        return redirect(url_for('pacientes.inicioPacientesView'))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @pacientes_bp.route('/p/<int:id>', methods=['POST'])
 def update_paciente(id):    #Actualiza un Paciente existente
     try:
-        #data = request.get_json()
         data = request.form
         paciente = Paciente(
             id=id,
@@ -73,7 +72,7 @@ def update_paciente(id):    #Actualiza un Paciente existente
             Estado= data.get('estado')
         )
         paciente.save()
-        return render_template("Pacientes/paci.html")
+        return redirect(url_for('pacientes.inicioPacientesView'))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

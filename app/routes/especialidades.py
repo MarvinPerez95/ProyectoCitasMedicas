@@ -32,7 +32,6 @@ def create_especialidad():
             nombre=data.get('nombre'),
             descripcion=data.get('descripcion')
         )
-        #result = especialidad.save()
         especialidad.save()
         return jsonify({"message": "Especialidad creada", "id": especialidad.id}), 201
     except Exception as e:
@@ -48,7 +47,6 @@ def update_especialidad(id):
             nombre=data.get('nombre'),
             descripcion=data.get('descripcion')
         )
-        #result = especialidad.save()
         especialidad.save()
         return jsonify({"message": "Especialidad actualizada"}), 200
     except Exception as e:
@@ -58,7 +56,6 @@ def update_especialidad(id):
 def delete_especialidad(id):
     """Elimina una especialidad"""
     try:
-        #result = Especialidad.delete(id)
         Especialidad.delete(id)
         return jsonify({"message": "Especialidad eliminada"}), 200
     except Exception as e:
