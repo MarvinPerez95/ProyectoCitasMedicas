@@ -136,11 +136,11 @@ GO
 
 
 -- Obtener todos los m�dicos
-CREATE PROCEDURE sp_ObtenerMedicos
+CREATE or alter PROCEDURE sp_ObtenerMedicos
 AS
 BEGIN
     SELECT m.MedicoID, m.Nombre, m.Apellidos, 
-           m.EspecialidadID, e.Nombre AS Especialidad,
+           e.Nombre AS Especialidad,
            m.Telefono, m.Email, m.Estado
     FROM Medicos m
     INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
@@ -150,12 +150,12 @@ GO
 
 
 -- Obtener un m�dico por ID
-CREATE PROCEDURE sp_ObtenerMedicoPorID
+CREATE or alter PROCEDURE sp_ObtenerMedicoPorID
     @MedicoID INT
 AS
 BEGIN
     SELECT m.MedicoID, m.Nombre, m.Apellidos, 
-           m.EspecialidadID, e.Nombre AS Especialidad,
+           e.Nombre AS Especialidad,
            m.Telefono, m.Email, m.Estado
     FROM Medicos m
     INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
@@ -163,16 +163,15 @@ BEGIN
 END;
 GO
 
-
 -- Actualizar m�dico
-CREATE PROCEDURE sp_ActualizarMedico
+CREATE or alter PROCEDURE sp_ActualizarMedico
     @MedicoID INT,
     @Nombre VARCHAR(50),
     @Apellidos VARCHAR(50),
     @EspecialidadID INT,
     @Telefono VARCHAR(20) = NULL,
     @Email VARCHAR(100) = NULL,
-    @Estado BIT = 1
+    @Estado BIT 
 AS
 BEGIN
     UPDATE Medicos
@@ -188,7 +187,21 @@ BEGIN
 END;
 GO
 
+-- Eliminar (logico) un m�dico
+CREATE or alter PROCEDURE sp_EliminarMedico
+	@MedicoID INT
+AS
+BEGIN
+-- En lugar de eliminar f�sicamente, actualizamos el estado a inactivo
+		UPDATE Medicos
+		SET Estado = 0
+		WHERE MedicoID = @MedicoID;
 
+		SELECT 'Medico marcado como inactivo' AS Mensaje;
+
+		SELECT @@ROWCOUNT AS FilasAfectadas;
+END;
+GO
 
 -- ===========================
 -- PROCEDIMIENTOS PARA PACIENTES

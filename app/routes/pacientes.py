@@ -75,7 +75,8 @@ def update_paciente(id):    #Actualiza un Paciente existente
             Estado= data.get('estado')
         )
         paciente.save()
-        return jsonify({"message": "Paciente actualizado"}), 200
+        #return jsonify({"message": "Paciente actualizado"}), 200
+        return render_template("Pacientes/paci.html")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
