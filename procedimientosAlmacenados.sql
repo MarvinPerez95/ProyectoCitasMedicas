@@ -468,7 +468,7 @@ BEGIN
     END
     
     -- Si pasó todas las validaciones, crear la cita
-    INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado, Observaciones, FechaCreacion)
+    INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Observaciones, Estado, FechaCreacion)
     VALUES (@PacienteID, @MedicoID, @Fecha, @Hora, @Motivo, @observaciones, 'Programada', GETDATE());
     
     SELECT SCOPE_IDENTITY() AS CitaID;
@@ -511,18 +511,36 @@ END;
 GO
 
 -- Obtener citas por paciente ******
-CREATE PROCEDURE sp_ObtenerCitasPorPaciente
+CREATE or alter PROCEDURE sp_ObtenerCitasPorPaciente
 	@PacienteID INT
 AS
 BEGIN
-	SELECT c.CitaID, c.PacienteID, p.Nombre + '' + p.Apellidos AS NombrePaciente,
-		   c.MedicoID, m.Nombre + '' + m.Apellidos AS NombreMedico,
+	SELECT c.CitaID, c.PacienteID, p.Nombre + ' ' + p.Apellidos AS NombrePaciente,
+		   c.MedicoID, m.Nombre + ' ' + m.Apellidos AS NombreMedico,
 		   c.Estado, c.Observaciones, c.FechaCreacion
 	FROM Citas c
 	INNER JOIN Pacientes p ON c.PacienteID = p.PacienteID
 	INNER JOIN Medicos m ON c.MedicoID = m.MedicoID
 	INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
 	WHERE c.PacienteID = @PacienteID
+	ORDER BY c.Fecha DESC, c.Hora;
+END;
+GO
+
+-- Obtener citas por Cita ID******
+CREATE or alter PROCEDURE sp_ObtenerCitasPorCitaID
+	@citaID INT
+AS
+BEGIN
+	SELECT c.CitaID, c.PacienteID, p.Nombre + ' ' + p.Apellidos AS NombrePaciente,
+		   c.MedicoID, m.Nombre + ' ' + m.Apellidos AS NombreMedico,
+		   c.Fecha, c.Hora, c.Motivo,
+		   c.Estado, c.Observaciones, c.FechaCreacion
+	FROM Citas c
+	INNER JOIN Pacientes p ON c.PacienteID = p.PacienteID
+	INNER JOIN Medicos m ON c.MedicoID = m.MedicoID
+	INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
+	WHERE c.CitaID = @citaID
 	ORDER BY c.Fecha DESC, c.Hora;
 END;
 GO
@@ -550,19 +568,18 @@ END;
 GO
 
 -- Actualizar Cita Completa
-CREATE PROCEDURE sp_ActualizarCita
+CREATE or alter PROCEDURE sp_ActualizarCita
 	@CitaID INT,
 	@PacienteID INT,
 	@MedicoID INT,
 	@Fecha DATE,
 	@Hora TIME,
-	@Motivo VARCHAR (200) = NULL,
-	@Estado VARCHAR (20) = 'Programada',
-	@Observaciones VARCHAR (500) = NULL
+	@Motivo VARCHAR (200),
+	@Estado VARCHAR (20),
+	@Observaciones VARCHAR (500)
 
 AS
 BEGIN
-
 	-- Verificar que no haya conflicto de horario para el nuevo m�dico
 	IF EXISTS (
 		SELECT 1
@@ -595,11 +612,17 @@ GO
 
 
 -- Eliminar Cita
-CREATE PROCEDURE sp_EliminarCita
+CREATE  or alter PROCEDURE sp_EliminarCita
 	@CitaID INT
 AS
 BEGIN
 	-- En lugar de elinnar físicamente, actualizamos a cancelada
+	if exists (select 1 from citas where CitaID = @CitaID and Estado = 'Cancelada')
+	begin
+		RAISERROR('El m�dico ya tiene una cita programada en este horario', 16, 1);
+        RETURN;
+	end
+
 	UPDATE citas
 	SET Estado = 'Cancelada',
 		Observaciones = CONCAT (ISNULL(Observaciones, ''),
@@ -608,15 +631,15 @@ BEGIN
 	WHERE CitaID = @CitaID;
 
 	SELECT @@ROWCOUNT AS FilasAfectadas;
+	return 'Cita Cancelada con exito'
 END;
 GO
-
 
 -- IMPLEMENTACI�N DE PROCEDIMIENTOS DE AUTENTICACI�N
 
 -- Autenticaci�n de Usuarios
 -- Validar credenciales de usuario
-CREATE PROCEDURE sp_ValidarUsuario
+CREATE or alter PROCEDURE sp_ValidarUsuario
     @Email VARCHAR(100),
     @Password VARCHAR(255)
 AS
@@ -639,14 +662,14 @@ BEGIN
     BEGIN
         -- Credenciales incorrectas o usuario no existe
         SELECT 0 AS Autenticado, 'Credenciales inv�lidas' AS Mensaje;
-        RETURN;
+        RETURN 0;
     END
     
     IF @Estado = 0
     BEGIN
         -- Usuario existe pero está inactivo
         SELECT 0 AS Autenticado, 'Usuario inactivo. Contacte al administrador.' AS Mensaje;
-        RETURN;
+        RETURN 1;
     END
     
     -- Usuario autenticado correctamente, actualizar último acceso

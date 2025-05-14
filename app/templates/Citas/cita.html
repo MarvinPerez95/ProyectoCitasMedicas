@@ -108,10 +108,10 @@
             //Convertir Hora
             data: "Hora",
             render: function (data, type, row) {
-              const hora = new Date(data);
-              return hora.toLocaleDateString([], { hour: "2-digit", minute: "2-digit" });
+              return data ? data : "-";
             },
           },
+          { data: 'Motivo' },
           { data: "Estado" },
           { data: "Observaciones" },
           {

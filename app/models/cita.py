@@ -30,6 +30,11 @@ class Cita:
         result = execute_stored_procedure('sp_ObtenerMedicoPorID', [pacienteId])
         return result[0] if result else None
     
+    @staticmethod
+    def get_by_Citaid(citaID):
+        """Obtiene un médico por su ID"""
+        result = execute_stored_procedure('sp_ObtenerCitasPorCitaID', [citaID])
+        return result[0] if result else None
     
     def save(self):
         """Crea o actualiza una Cita"""
@@ -47,7 +52,7 @@ class Cita:
             return execute_stored_procedure('sp_ActualizarCita', 
                                           [self.id, self.pacienteId, self.medicoID, 
                                            self.fecha, self.hora, 
-                                           self.motivo, self.observaciones])
+                                           self.motivo, self.estado,self.observaciones])
 
     def actualizarEstadoCita(self):
         result = execute_stored_procedure('sp_ActualizarEstadoCita',

@@ -24,7 +24,7 @@ def nueva_cita(): #Creacion de Cita
 
 @citas_bp.route('/actualizarC/<int:id>', methods=['GET'])
 def actualizar_cita(id): #Actualizacion de Cita
-    cita = Cita.get_all(id)
+    cita = Cita.get_by_Citaid(id)
     doctor = Doctor.get_all()
     paciente = Paciente.get_all()
     return render_template('/citas/actualizar_cita.html',cita = cita, doctor = doctor, paciente = paciente)
@@ -92,7 +92,7 @@ def update_cita(id):  #Actualizar un Cita
             Hora=data.get('hora'),
             Motivo=data.get('motivo'),
             Estado=data.get('estado'),
-            observaciones=data.get('observaciones')
+            Observaciones=data.get('observaciones')
         )
         cita.save()
         return redirect(url_for('citas.iniciocitasView'))
