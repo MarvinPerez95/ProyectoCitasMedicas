@@ -2,83 +2,65 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Medicitas - Inicio</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>Panel Principal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body,
-    html {
-      height: 100%;
-      margin: 0;
+    .opcion {
+      transition: transform 0.2s;
     }
 
-    .background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("https://ca-times.brightspotcdn.com/dims4/default/983799e/2147483647/strip/true/crop/840x560+0+0/resize/1200x800!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F79%2F84%2F028a052341ac93212d624e9452a9%2Fdoctor-examining-female-patient.jpg");
-      /* <- Cambia aquí si la imagen está en otro lugar */
-      background-size: cover;
-      background-position: center;
-      z-index: -2;
-      filter: brightness(0.8) blur(4px);
-    }
-
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.5);
-      z-index: -1;
-    }
-
-    .center-box {
-      max-width: 600px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 15px;
+    .opcion:hover {
+      transform: scale(1.03);
     }
   </style>
 </head>
 
-<body class="d-flex justify-content-center align-items-center">
-  <div class="background"></div>
-  <div class="overlay"></div>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="text-center mb-5">Sistema de Gestión Clínica</h1>
 
-  <div class="card shadow-lg p-4 center-box text-center">
-    <h1 class="mb-4">Sistema Medicitas</h1>
-    <h4 class="mb-3">Bienvenido a su gestor médico más efectivo</h4>
-    <p>
-      Será un placer poder atenderle de la mejor forma y ponernos a su
-      disposición, deseándole una pronta mejoría.
-    </p>
-    <p>Para comunicarse con nosotros, contamos con los siguientes medios:</p>
+    <div class="row justify-content-center g-4">
+      <!-- Módulo de Doctores -->
+      <div class="col-md-4">
+        <div class="card opcion shadow-sm">
+          <div class="card-body text-center">
+            <h5 class="card-title">Gestión de Doctores</h5>
+            <p class="card-text">administrar información del personal médico.</p>
+            <a href="{{ url_for('doctores.inicioDoctoresView') }}" class="btn btn-primary">Ir a Doctores</a>
+            <a href="{{ url_for('doctores.nuevo_doctor') }}" class="btn btn-primary">Agregar un Doctor</a>
+          </div>
+        </div>
+      </div>
 
-    <ul class="list-unstyled mb-4">
-      <li>
-        <i class="fas fa-phone-alt me-2 text-primary"></i>Teléfono: +502 5555
-        1111
-      </li>
-      <li>
-        <i class="fas fa-envelope me-2 text-danger"></i>Email:
-        contacto@medicitas.com
-      </li>
-      <li>
-        <i class="fas fa-map-marker-alt me-2 text-success"></i>Dirección: Zona
-        medica, z10
-      </li>
-    </ul>
+      <!-- Módulo de Citas -->
+      <div class="col-md-4">
+        <div class="card opcion shadow-sm">
+          <div class="card-body text-center">
+            <h5 class="card-title">Gestión de Citas</h5>
+            <p class="card-text">Consultar, registrar y actualizar las citas médicas del sistema.</p>
+            <a href="{{ url_for('citas.iniciocitasView') }}" class="btn btn-primary">Ir a Citas</a>
+            <a href="{{ url_for('citas.nueva_cita') }}" class="btn btn-primary">Agregar una Cita</a>
+          </div>
+        </div>
+      </div>
 
-    <div class="d-grid gap-2 d-md-block">
-      <a href="{{ url_for('pacientes.inicioPacientes') }}" class="btn btn-primary">Pacientes</a>
-      <a href="{{ url_for('doctores.inicioDoctoresView') }}" class="btn btn-primary">Doctores</a>
+      <!-- Módulo de Pacientes (si usas citas/view otra vez, podría ser error de redacción) -->
+      <div class="col-md-4">
+        <div class="card opcion shadow-sm">
+          <div class="card-body text-center">
+            <h5 class="card-title">Gestión de Pacientes</h5>
+            <p class="card-text">Accede a los datos de pacientes y su historial clínico.</p>
+            <a href="{{ url_for('pacientes.inicioPacientesView') }}" class="btn btn-primary">Ir a Pacientes</a>
+            <a href="{{ url_for('pacientes.nuevo_paciente') }}" class="btn btn-primary">Agregar un Paciente</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
