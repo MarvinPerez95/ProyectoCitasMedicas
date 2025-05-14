@@ -421,7 +421,8 @@ CREATE OR ALTER PROCEDURE sp_CrearCita
     @MedicoID INT,
     @Fecha DATE,
     @Hora TIME,
-    @Motivo VARCHAR(255) = NULL
+    @Motivo VARCHAR(255) = NULL,
+	@observaciones varchar(255) = Null
 AS
 BEGIN
     -- Validar que el paciente exista y est� activo
@@ -467,8 +468,8 @@ BEGIN
     END
     
     -- Si pasó todas las validaciones, crear la cita
-    INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado, FechaCreacion)
-    VALUES (@PacienteID, @MedicoID, @Fecha, @Hora, @Motivo, 'Programada', GETDATE());
+    INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado, Observaciones, FechaCreacion)
+    VALUES (@PacienteID, @MedicoID, @Fecha, @Hora, @Motivo, @observaciones, 'Programada', GETDATE());
     
     SELECT SCOPE_IDENTITY() AS CitaID;
 END;
@@ -491,7 +492,7 @@ BEGIN
 END;
 GO
 
--- Obtener citas por m�dico
+-- Obtener citas por m�dico ******
 CREATE PROCEDURE sp_ObtenerCitasPorMedico
     @MedicoID INT
 AS
@@ -506,6 +507,23 @@ BEGIN
     INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
     WHERE c.MedicoID = @MedicoID
     ORDER BY c.Fecha DESC, c.Hora;
+END;
+GO
+
+-- Obtener citas por paciente ******
+CREATE PROCEDURE sp_ObtenerCitasPorPaciente
+	@PacienteID INT
+AS
+BEGIN
+	SELECT c.CitaID, c.PacienteID, p.Nombre + '' + p.Apellidos AS NombrePaciente,
+		   c.MedicoID, m.Nombre + '' + m.Apellidos AS NombreMedico,
+		   c.Estado, c.Observaciones, c.FechaCreacion
+	FROM Citas c
+	INNER JOIN Pacientes p ON c.PacienteID = p.PacienteID
+	INNER JOIN Medicos m ON c.MedicoID = m.MedicoID
+	INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
+	WHERE c.PacienteID = @PacienteID
+	ORDER BY c.Fecha DESC, c.Hora;
 END;
 GO
 
@@ -530,24 +548,6 @@ BEGIN
     SELECT @@ROWCOUNT AS FilasAfectadas;
 END;
 GO
-
--- Obtener citas por paciente
-CREATE PROCEDURE sp_ObtenerCitasPorPaciente
-	@PacienteID INT
-AS
-BEGIN
-	SELECT c.CitaID, c.PacienteID, p.Nombre + '' + p.Apellidos AS NombrePaciente,
-		   c.MedicoID, m.Nombre + '' + m.Apellidos AS NombreMedico,
-		   c.Estado, c.Observaciones, c.FechaCreacion
-	FROM Citas c
-	INNER JOIN Pacientes p ON c.PacienteID = p.PacienteID
-	INNER JOIN Medicos m ON c.MedicoID = m.MedicoID
-	INNER JOIN Especialidades e ON m.EspecialidadID = e.EspecialidadID
-	WHERE c.PacienteID = @PacienteID
-	ORDER BY c.Fecha DESC, c.Hora;
-END;
-GO
-
 
 -- Actualizar Cita Completa
 CREATE PROCEDURE sp_ActualizarCita

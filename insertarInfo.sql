@@ -36,7 +36,7 @@ DECLARE @FechaActual DATE = GETDATE();
 
 INSERT INTO Citas (PacienteID, MedicoID, Fecha, Hora, Motivo, Estado)
 VALUES 
-    (1, 1, DATEADD(DAY, 1, @FechaActual), '09:00', 'Consulta general', 'Programada'),
+    (2, 1, DATEADD(DAY, 1, @FechaActual), '09:00', 'Consulta general', 'Programada'),
     (2, 2, DATEADD(DAY, 1, @FechaActual), '10:30', 'Revisión cardíaca', 'Programada'),
     (3, 3, DATEADD(DAY, 2, @FechaActual), '14:00', 'Problema en la piel', 'Programada'),
     (4, 4, DATEADD(DAY, 3, @FechaActual), '16:30', 'Revisión pediátrica', 'Programada'),

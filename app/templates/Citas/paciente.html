@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicitas - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://ca-times.brightspotcdn.com/dims4/default/983799e/2147483647/strip/true/crop/840x560+0+0/resize/1200x800!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F79%2F84%2F028a052341ac93212d624e9452a9%2Fdoctor-examining-female-patient.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.7) blur(5px);
+            z-index: -2;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+        }
+
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+<!-- Login -->
+<div id="login-section" class="centered">
+    <div class="card p-4" style="width: 300px;">
+        <h4 class="card-title mb-3 text-center">Iniciar sesión de pacientes</h4>
+        <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" id="usuario" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" id="contrasena" class="form-control" required>
+        </div>
+        <button class="btn btn-primary w-100" onclick="iniciarSesion()">Entrar</button>
+    </div>
+</div>
+
+<!-- Bienvenida -->
+<div id="bienvenida-section" class="hidden centered text-center flex-column">
+    <div class="card p-4" style="max-width: 500px;">
+        <h4 class="mb-3">Bienvenido ¿Qué deseas hacer el día de hoy?</h4>
+        <button class="btn btn-success mb-2" onclick="mostrarFormulario()">Solicitar Cita</button>
+        <button class="btn btn-info mb-2" onclick="mostrarCalendario()">Ver Calendario de Citas</button>
+    </div>
+</div>
+
+<!-- Formulario de cita -->
+<div id="formulario-cita" class="hidden container mt-5">
+    <div class="card">
+        <div class="card-header bg-info text-white">Formulario de Cita</div>
+        <div class="card-body">
+            <form method="POST" action="/pacientes/">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" name="fecha" class="form-control" required>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Hora</label>
+                        <input type="time" name="hora" class="form-control" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Edad</label>
+                    <input type="number" name="edad" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Doctor</label>
+                    <select name="doctor" class="form-control" required>
+                        <option value="">Seleccione un doctor</option>
+                        <option value="Dr. Pérez">Dr. Pérez</option>
+                        <option value="Dra. López">Dra. López</option>
+                        <option value="Dr. Rodríguez">Dr. Rodríguez</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Motivo de la cita</label>
+                    <textarea name="motivo" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+            </form>
+
+            <!-- Botón Volver al inicio -->
+            <button class="btn btn-secondary mt-3" onclick="volverInicioDesdeFormulario()">Volver al inicio</button>
+        </div>
+    </div>
+</div>
+
+<!-- Calendario de citas -->
+<div id="calendario-citas" class="hidden container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">Calendario de Citas</div>
+        <div class="card-body">
+            <div id="calendar"></div>
+            <button class="btn btn-secondary mt-3" onclick="volverInicio()">Volver al inicio</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+<script>
+    const citasPaciente = [
+        { fecha: '2025-05-01', hora: '10:00', doctor: 'Dr. Pérez', motivo: 'Chequeo general' },
+        { fecha: '2025-05-03', hora: '15:00', doctor: 'Dra. López', motivo: 'Consulta cardiológica' },
+        { fecha: '2025-05-10', hora: '09:30', doctor: 'Dr. Rodríguez', motivo: 'Dolor de cabeza' }
+    ];
+
+    let calendar;
+
+    function iniciarSesion() {
+        const usuario = document.getElementById("usuario").value;
+        const contrasena = document.getElementById("contrasena").value;
+        if (usuario && contrasena) {
+            document.getElementById("login-section").classList.add("hidden");
+            document.getElementById("bienvenida-section").classList.remove("hidden");
+        } else {
+            alert("Por favor, complete todos los campos.");
+        }
+    }
+
+    function mostrarFormulario() {
+        document.getElementById("bienvenida-section").classList.add("hidden");
+        document.getElementById("formulario-cita").classList.remove("hidden");
+    }
+
+    function mostrarCalendario() {
+        document.getElementById("bienvenida-section").classList.add("hidden");
+        document.getElementById("formulario-cita").classList.add("hidden");
+        document.getElementById("calendario-citas").classList.remove("hidden");
+
+        if (!calendar) {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: citasPaciente.map(cita => ({
+                    title: `${cita.doctor} - ${cita.motivo}`,
+                    start: `${cita.fecha}T${cita.hora}`
+                })),
+                locale: 'es'
+            });
+            calendar.render();
+        }
+    }
+
+    function volverInicio() {
+        document.getElementById("calendario-citas").classList.add("hidden");
+        document.getElementById("bienvenida-section").classList.remove("hidden");
+    }
+
+    function volverInicioDesdeFormulario() {
+        document.getElementById("formulario-cita").classList.add("hidden");
+        document.getElementById("bienvenida-section").classList.remove("hidden");
+    }
+</script>
+
+</body>
+</html>
+

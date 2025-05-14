@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Listado de Citas</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- DataTables + Bootstrap 5 integration -->
+  <link href="https://cdn.datatables.net/v/bs5/dt-1.13.10/fc-4.3.0/r-2.5.0/datatables.min.css" rel="stylesheet" />
+  <style>
+    /* Filtros por columna: inputs visibles solo para cabecera de filtros */
+    thead input,
+    thead select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <div class="container-xl py-4">
+    <h1 class="mb-4">Modulo Citas</h1>
+
+    <!-- Tabla vacía: se llena vía Ajax -->
+    <table id="tablaCitas" class="table table-striped table-bordered w-100">
+      <thead>
+        <!-- Fila de encabezados -->
+        <tr>
+          <th>ID</th>
+          <th>NombrePaciente</th>
+          <th>NombreMedico</th>
+          <th>Especialidad</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Motivo</th>
+          <th>Estado</th>
+          <th>Observaciones</th>
+          <th>FechaDeCreacion</th>
+          <th>Acciones</th>
+        </tr>
+        <!-- Fila de filtros -->
+        <tr>
+          <th></th>
+          <th><input type="text" placeholder="Filtrar…" /></th>
+          <th><input type="text" placeholder="Filtrar…" /></th>
+          <th> <!-- Especialidad -->
+            <select class="form-select" name="especialidad" required>
+              <option value="">Selecciona…
+              </option>
+              {% for e in especialidad %}
+              <option value="{{ e.EspecialidadID }}">
+                {{ e.Nombre }}
+              </option>
+              {% endfor %}
+            </select>
+          </th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th> <!-- Estado -->
+            <select>
+              <option value="">Todos</option>
+              <option value="Programada">Programada</option>
+              <option value="Completada">Completada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- JS – Bootstrap 5 + DataTables -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/v/bs5/dt-1.13.10/fc-4.3.0/r-2.5.0/datatables.min.js"></script>
+
+  <script>
+    $(function () {
+      // 1 - crea la tabla
+      const tabla = $("#tablaCitas").DataTable({
+        ajax: {
+          url: "{{ url_for('citas.get_citas') }}", // /citas/c
+          dataSrc: "", // la lista JSON viene de raíz
+        },
+        deferRender: true, // rendimiento
+        columns: [
+          { data: "CitaID" },
+          { data: "NombrePaciente" },
+          { data: "NombreMedico" },
+          { data: "Especialidad" },
+          {
+            //Convertir fecha
+            data: "Fecha",
+            render: function (data, type, row) {
+              const fecha = new Date(data);
+              return fecha.toLocaleDateString();
+            },
+          },
+          {
+            //Convertir Hora
+            data: "Hora",
+            render: function (data, type, row) {
+              const hora = new Date(data);
+              return hora.toLocaleDateString([], { hour: "2-digit", minute: "2-digit" });
+            },
+          },
+          { data: "Estado" },
+          { data: "Observaciones" },
+          {
+            data: "FechaCreacion",
+            render: function (data, type, row) {
+              const fecha = new Date(data);
+              return fecha.toLocaleDateString();
+            },
+          },
+          {
+            data: "CitaID",
+            render: function (data, type, row) {
+              return `
+                  <a href="/citas/actualizarC/${data}" class="btn btn-sm btn-primary">
+                  Actualizar
+                  </a>
+                  <button class="btn btn-sm btn-danger" onclick="eliminarCita(${data})">
+                  Eliminar
+                  </button>
+                `;
+            },
+            orderable: false,
+            searchable: false,
+          },
+        ],
+        order: [[0, "asc"]], // orden por ID
+        responsive: true, // tablas adaptables
+        language: {
+          url: "//cdn.datatables.net/plug-ins/1.13.10/i18n/es-ES.json",
+        },
+      });
+
+      // 2 - activa filtros por columna
+      $("#tablaCitas thead tr:eq(1) th").each(function (i) {
+        const input = $("input, select", this);
+        if (!input.length) return; // columnas sin filtro
+
+        input.on("keyup change", function () {
+          if (tabla.column(i).search() !== this.value) {
+            tabla.column(i).search(this.value).draw();
+          }
+        });
+      });
+    });
+
+    function eliminarCita(id) {
+      if (!confirm("¿Estás seguro de que deseas eliminar la Cita?"))
+        return;
+
+      fetch(`/citas/c/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.message) {
+            alert(data.message);
+            location.reload(); // Recarga la tabla
+          } else {
+            alert("Error: " + data.error);
+          }
+        })
+        .catch((err) => alert("Error de red: " + err));
+    }
+  </script>
+</body>
+
+</html>
